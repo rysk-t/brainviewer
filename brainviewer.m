@@ -4,6 +4,16 @@ function brainviewer(imgFile)
 % This program eequires SPM (tested with 12).
 %
 
+%% File Dialog
+if nargin==0
+    [fName, fPath] = uigetfile('*.nii');
+    imgFile = [fPath filesep fName];
+end
+
+%% Filename
+[fPath, fName, fExt] = fileparts(imgFile);
+vw.filename = fName;
+vw.filepath = fPath;
 
 %% Settings
 wndSize = [1024, 768];
@@ -27,9 +37,6 @@ vw.crosshair.color = 'r';
 %% Selected voxels
 vw.select = [];
 
-%% Filename
-[fPath, fName, fExt] = fileparts(imgFile);
-vw.filename = fName;
 
 %% Init UI ---------------------------------------------------------------------
 screen = get(0);
@@ -127,7 +134,6 @@ function vw = init_canvas(vw)
 %
 for i = 1:3
     secPos = vw.crosshair.pos;
-
     set(gcf, 'CurrentAxes', vw.canvas(i).ax);
     switch i
       case 1
@@ -187,6 +193,7 @@ for i = 1:3
 
     switch i
       case 1
+        disp(secPos(2))
         dispImg = flip(squeeze(vw.dat.img(:, secPos(2), :))', 2);
         chPos = [secPos(1), secPos(3)];
       case 2
@@ -214,8 +221,9 @@ end
 function vols = load_brain(imgFile)
 % Load a brain image
 %
-
-fprintf('Loading %s\n', imgFile);
+[fPath, fName, hoge] = fileparts(imgFile);
+fprintf('File Name - %s\n', fName);
+fprintf('Location  - %s\n', fPath);
 
 vol = spm_vol(imgFile);
 [voxel, xyz] = spm_read_vols(vol);
